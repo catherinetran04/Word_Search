@@ -1,146 +1,119 @@
-#Catherine Tran
-
 import random
 import string
 
+# Define directions as constants for better readability
+DIRECTIONS = {
+    "right": (1, 0),
+    "down": (0, 1),
+    "right_down": (1, 1),
+    "right_up": (1, -1),
+    "left": (-1, 0),
+    "up": (0, -1),
+    "left_down": (-1, 1),
+    "left_up": (-1, -1)
+}
 
 def get_size(grid):
-    """get the size of word search"""
-    i = len(grid)
-    j = len(grid[0])
-    temp = (j, i)
-    return temp
-
+    """Get the size of the word search grid."""
+    return len(grid[0]), len(grid)
 
 def print_word_grid(grid):
-    """"print the grid"""
-    for i in grid:
-        for j in i:
-            print(j, end="")
-        print()
-
+    """Print the word search grid."""
+    for row in grid:
+        print("".join(row))
 
 def copy_word_grid(grid):
-    """make a copy of the grid"""
-    outer = []
-    for i in grid:
-        inner = []
-        for j in i:
-            inner.append(j)
-        outer.append(inner)
-    return outer
-
+    """Create a copy of the grid."""
+    return [row[:] for row in grid]
 
 def extract(grid, position, direction, max_len):
-    """find word given answer location adn direction"""
-    temp = ""
-    if max_len == 0:
-        return temp
+    """Extract a word from the grid given its start position and direction."""
+    word = []
     for i in range(max_len):
         x = position[0] + (i * direction[0])
         y = position[1] + (i * direction[1])
         if 0 <= y < len(grid) and 0 <= x < len(grid[0]):
-            temp = temp + (grid[y][x])
-    return temp
-
+            word.append(grid[y][x])
+        else:
+            break
+    return "".join(word)
 
 def show_solution(grid, word, solution):
-    """change answer to caps"""
+    """Highlight the found word in the grid."""
     if not solution:
-        print(word, "is not found in this word search")
-    else:
-        sol = copy_word_grid(grid)
-        for i in range(len(word)):
-            x = (solution[0][0] + (i * solution[1][0]))
-            y = (solution[0][1] + (i * solution[1][1]))
-            sol[y][x] = sol[y][x].upper()
+        print(f"{word} is not found in this word search.")
+        return
+    
+    sol_grid = copy_word_grid(grid)
+    for i in range(len(word)):
+        x = solution[0][0] + (i * solution[1][0])
+        y = solution[0][1] + (i * solution[1][1])
+        sol_grid[y][x] = sol_grid[y][x].upper()
 
-        print(word.upper(), "can be found as below")
-        for i in sol:
-            for j in i:
-                print(j, end="")
-            print()
-
+    print(f"{word.upper()} can be found as below:")
+    print_word_grid(sol_grid)
 
 def find(grid, word):
-    """find the word"""
-    right = (1, 0)
-    down = (0, 1)
-    right_down = (1, 1)
-    right_up = (1, -1)
-    directions = (right, down, right_down, right_up)
-    for i in range(len(grid)):
-        for j in range(len(grid[0])):
-            for k in directions:
-                sol = ""
-                for l in range(len(word)):
-                    x = (i + (l * k[0]))
-                    y = (j + (l * k[1]))
-                    if 0 <= y < len(grid) and 0 <= x < len(grid[0]):
-                        sol = sol + (grid[y][x])
-                if sol == word:
-                    location = (i, j)
-                    solution = (location, k)
-                    return solution
+    """Find the word in the grid in all possible directions."""
+    for y in range(len(grid)):
+        for x in range(len(grid[0])):
+            for direction in DIRECTIONS.values():
+                if extract(grid, (x, y), direction, len(word)) == word:
+                    return (x, y), direction
     return False
 
-
 def find_all(grid, words):
-    """find all words"""
-    temp = {}
-    for i in range(len(words)):
-        temp[words[i]] = find(grid, words[i])
-    return temp
+    """Find all words in the grid."""
+    return {word: find(grid, word) for word in words}
 
+def can_place_word(grid, word, start, direction):
+    """Check if a word can be placed at a given position and direction."""
+    for i in range(len(word)):
+        x = start[0] + i * direction[0]
+        y = start[1] + i * direction[1]
+        if not (0 <= x < len(grid[0]) and 0 <= y < len(grid)):
+            return False
+        if grid[y][x] not in ("", word[i]):
+            return False
+    return True
+
+def place_word(grid, word, start, direction):
+    """Place the word in the grid at the given position and direction."""
+    for i in range(len(word)):
+        x = start[0] + i * direction[0]
+        y = start[1] + i * direction[1]
+        grid[y][x] = word[i]
 
 def generate(width, height, words):
-    """generate a word search"""
+    """Generate a word search grid with the given words."""
+    grid = [["" for _ in range(width)] for _ in range(height)]
     words_found = []
-    right = (1, 0)
-    down = (0, 1)
-    right_down = (1, 1)
-    right_up = (1, -1)
-    directions = (right, down, right_down, right_up)
-    grid = []
-    for i in range(height):
-        inner = []
-        for j in range(width):
-            inner.append("")
-        grid.append(inner)
 
-    for i in words:
-        for j in range(100):
-            valid = False
-            x0 = random.randrange(height)
-            y0 = random.randrange(width)
-            d = random.randrange(4)
-            for k in range(len(i)):
-                x = x0 + (k * directions[d][0])
-                y = y0 + (k * directions[d][1])
-                if (0 <= y < width) and (0 <= x < height):
-                    temp = grid[y][x]
-                    if (temp == i[k:(k+1)]) or (temp == ""):
-                        valid = True
-            if valid:
-                for k in range(len(i)):
-                    x = x0 + (k * directions[d][0])
-                    y = y0 + (k * directions[d][1])
-                    grid[y][x] = i[k:(k+1)]
-                words_found.append(i)
+    for word in words:
+        placed = False
+        for _ in range(100):  # Attempt to place the word 100 times
+            start = (random.randrange(width), random.randrange(height))
+            direction = random.choice(list(DIRECTIONS.values()))
+            if can_place_word(grid, word, start, direction):
+                place_word(grid, word, start, direction)
+                words_found.append(word)
+                placed = True
                 break
 
+        if not placed:
+            print(f"Could not place the word: {word}")
 
-    for i in range(width):
-        for j in range(height):
-            if grid[j][i] == "":
-                x = random.choice(string.ascii_letters)
-                grid[j][i] = x.lower()
+    # Fill empty cells with random letters
+    for y in range(height):
+        for x in range(width):
+            if grid[y][x] == "":
+                grid[y][x] = random.choice(string.ascii_lowercase)
 
-    temp = (grid, words_found)
-    return temp
+    return grid, words_found
 
 if __name__ == "__main__":
-    x = generate(5, 10, ['cat', 'dog', 'art', 'town', 'den', 'wolf', 'part', 'mansion'])
-    for i in x:
-        for j in i:
-            print(j)
+    grid, words_placed = generate(10, 5, ['cat', 'dog', 'art', 'town', 'den', 'wolf', 'part', 'mansion'])
+    print("Generated Word Search Grid:")
+    print_word_grid(grid)
+    print("\nWords placed:", words_placed)
+

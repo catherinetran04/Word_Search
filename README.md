@@ -1,13 +1,10 @@
 # `Word Search Generator`
 
 This project is a Python implementation of a word search generator. It allows you to generate a word search grid with words hidden in different directions. The grid is filled with random letters for empty spaces, and the hidden words can be searched and highlighted in the grid.
-
-# Requirements
-Python 3.x
+- Requirements: Python 3.x
 No external libraries are required for this project. The standard random and string libraries are used.
 
-# Running the Program
-You can run the program directly from the command line:
+- Running the Program: You can run the program directly from the command line:
 ```
 python word_search.py
 ```
@@ -52,17 +49,15 @@ Generate Word Search Grid: The generate function is used to create a word search
 ```
 grid, words_placed = generate(10, 5, ['cat', 'dog', 'art', 'town', 'den', 'wolf', 'part', 'mansion'])
 ```
-
-Print the Grid: After generating the grid, you can print it using:
+- Print the Grid: After generating the grid, you can print it using:
 ```
 print_word_grid(grid)
 ```
-Find Words: To search for a specific word in the grid:
+- Find Words: To search for a specific word in the grid:
 ```
 find(grid, 'dog')
 ```
-
-Show Solution: If the word is found, you can highlight its position in the grid using:
+- Show Solution: If the word is found, you can highlight its position in the grid using:
 ```
 show_solution(grid, 'dog', find(grid, 'dog'))
 ```

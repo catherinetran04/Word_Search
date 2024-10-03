@@ -50,7 +50,7 @@ def show_solution(grid, word, solution):
         y = solution[0][1] + (i * solution[1][1])
         sol_grid[y][x] = sol_grid[y][x].upper()
 
-    print(f"{word.upper()} can be found as below:")
+    print(f"\n{word.upper()} can be found as below:")
     print_word_grid(sol_grid)
 
 def find(grid, word):
@@ -113,7 +113,21 @@ def generate(width, height, words):
 
 if __name__ == "__main__":
     grid, words_placed = generate(10, 5, ['cat', 'dog', 'art', 'town', 'den', 'wolf', 'part', 'mansion'])
-    print("Generated Word Search Grid:")
+    print("Generated Word Search Grid:\n")
     print_word_grid(grid)
     print("\nWords placed:", words_placed)
 
+
+    user_choice = input("If you wish to see the solutions to the search type 'S': ").strip().lower()
+    
+    # Find all words in the grid
+    solutions = find_all(grid, words_placed)
+    
+    # Process based on user choice
+    if user_choice == "s":
+        for word, solution in solutions.items():
+            if solution:
+                show_solution(grid, word, solution)
+            else:
+                print(f"'{word}' is not found in this word search.")
+    

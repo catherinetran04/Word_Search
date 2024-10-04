@@ -112,7 +112,30 @@ def generate(width, height, words):
     return grid, words_found
 
 if __name__ == "__main__":
-    grid, words_placed = generate(10, 5, ['cat', 'dog', 'art', 'town', 'den', 'wolf', 'part', 'mansion'])
+
+    default_width = 10
+    default_height = 5
+    default_words = ['cat', 'dog', 'art', 'town', 'den', 'wolf', 'part', 'mansion']
+
+    # Ask the user if they want to use default settings or customize
+    user_choice = input("Do you want to customize grid size and words? (yes/no): ").strip().lower()
+
+    if user_choice == "yes":
+        # Get user input for grid size if they want to customize
+        width = int(input("Enter the width of the grid: "))
+        height = int(input("Enter the height of the grid: "))
+        
+        # Get user input for words
+        words = input("Enter the words to place in the word search, separated by commas: ").strip().split(',')
+        words = [word.strip() for word in words]  # Remove any extra spaces around the words
+    else:
+        # Use default grid size and words
+        width = default_width
+        height = default_height
+        words = default_words
+    
+    # Generate the word search grid with the specified size and words
+    grid, words_placed = generate(width, height, words)
     print("Generated Word Search Grid:\n")
     print_word_grid(grid)
     print("\nWords placed:", words_placed)
